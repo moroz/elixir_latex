@@ -11,16 +11,26 @@ defmodule ElixirLatex.Job do
   @type attachments :: %{optional(atom) => iodata}
   @type layout :: {atom, binary | atom} | false
   @type view :: atom | false
+  @type renderer :: binary | :xelatex | :latex | :pdflatex
+  @type body :: iodata | nil
 
   @type t :: %__MODULE__{
           assigns: assigns,
           attachments: attachments,
           layout: layout,
           view: view,
-          job_name: binary | nil
+          job_name: binary | nil,
+          renderer: renderer,
+          body: body
         }
 
-  defstruct assigns: %{}, attachments: %{}, layout: false, view: false, job_name: nil
+  defstruct assigns: %{},
+            attachments: %{},
+            layout: false,
+            view: false,
+            job_name: nil,
+            renderer: :xelatex,
+            body: nil
 
   alias ElixirLatex.Job
 
@@ -37,7 +47,17 @@ defmodule ElixirLatex.Job do
 
   @spec put_layout(t, layout) :: t
   def put_layout(%Job{} = job, layout) do
-    Map.put(job, :layout, layout)
+    %{job | layout: layout}
+  end
+
+  @spec set_renderer(t, renderer) :: t
+  def set_renderer(%Job{} = job, renderer) when is_atom(renderer) or is_binary(renderer) do
+    %{job | renderer: renderer}
+  end
+
+  @spec put_body(t, body) :: t
+  def put_body(%Job{} = job, body) do
+    %{job | body: body}
   end
 
   @spec render(t, binary) :: {:ok, binary} | {:error, term}
@@ -47,10 +67,9 @@ defmodule ElixirLatex.Job do
     job = maybe_set_job_name(job)
     assigns = merge_assigns(job.assigns, assigns)
     source = render_with_layout(job, template, assigns)
-    render_to_pdf(source, job.job_name)
-  end
 
-  def render_to_pdf(source, job_name) when is_binary(job_name) do
+    job = put_body(job, source)
+    ElixirLatex.Renderer.render_to_pdf(job)
   end
 
   defp merge_assigns(original, overrides) do
