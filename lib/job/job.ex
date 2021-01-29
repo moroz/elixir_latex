@@ -50,6 +50,11 @@ defmodule ElixirLatex.Job do
     %{job | layout: layout}
   end
 
+  @spec put_view(t, view) :: t
+  def put_view(%Job{} = job, view) do
+    %{job | view: view}
+  end
+
   @spec set_renderer(t, renderer) :: t
   def set_renderer(%Job{} = job, renderer) when is_atom(renderer) or is_binary(renderer) do
     %{job | renderer: renderer}
