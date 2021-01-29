@@ -46,7 +46,9 @@ defmodule ElixirLatex.Attachment do
 
   defp remove_match(data_url, match) do
     data_range = Range.new(String.length(match), -1)
+
     String.slice(data_url, data_range)
+    |> String.trim_trailing()
   end
 
   def random_filename do

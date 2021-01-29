@@ -61,7 +61,7 @@ defmodule ElixirLatex.Renderer do
   end
 
   defp clean_up(job) do
-    File.rm_rf(job_directory(job))
+    Task.start(fn -> File.rm_rf(job_directory(job)) end)
   end
 
   def write_source(%Job{body: body} = job) do

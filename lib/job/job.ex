@@ -33,6 +33,7 @@ defmodule ElixirLatex.Job do
             body: nil
 
   alias ElixirLatex.Job
+  alias ElixirLatex.Attachment
 
   @spec assign(t, atom, term) :: t
   def assign(%Job{assigns: assigns} = job, key, value) when is_atom(key) do
@@ -43,6 +44,13 @@ defmodule ElixirLatex.Job do
   def put_attachment(%Job{attachments: attachments} = job, key, value)
       when is_atom(key) do
     %{job | attachments: Map.put(attachments, key, value)}
+  end
+
+  @spec put_data_url_attachment(t, atom, binary) :: t | :error
+  def put_data_url_attachment(%Job{attachments: attachments} = job, key, data_url) do
+    with %Attachment{} = attachment <- Attachment.from_data_url(data_url) do
+      %{job | attachments: Map.put(attachments, key, attachment)}
+    end
   end
 
   @spec put_layout(t, layout) :: t
@@ -69,7 +77,7 @@ defmodule ElixirLatex.Job do
   def render(job, template, assigns \\ [])
 
   def render(%Job{} = job, template, assigns) when is_binary(template) do
-    job = maybe_set_job_name(job)
+    job = maybe_set_job_name(job) |> assign_attachments()
     assigns = merge_assigns(job.assigns, assigns)
     source = render_with_layout(job, template, assigns)
 
@@ -94,6 +102,15 @@ defmodule ElixirLatex.Job do
   end
 
   defp maybe_set_job_name(job), do: job
+
+  defp assign_attachments(%Job{attachments: attachments, assigns: assigns} = job) do
+    attachments =
+      for {key, %{filename: filename, extension: extension}} <- attachments, into: %{} do
+        {key, "#{filename}.#{extension}"}
+      end
+
+    %{job | assigns: Map.put(assigns, :attachments, attachments)}
+  end
 
   defp render_with_layout(job, template, assigns) do
     render_assigns = Map.put(assigns, :job, job)
