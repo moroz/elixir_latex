@@ -11,10 +11,13 @@ defmodule ElixirLatex.Document do
     quote bind_quoted: [view: view, layout: layout] do
       import ElixirLatex.Job
 
+      @view view
+      @layout layout
+
       def new do
         %ElixirLatex.Job{}
-        |> put_view(view)
-        |> put_layout(layout)
+        |> put_view(@view)
+        |> put_layout(@layout)
       end
     end
   end

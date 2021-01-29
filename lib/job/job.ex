@@ -86,7 +86,7 @@ defmodule ElixirLatex.Job do
 
   defp random_job_name do
     :crypto.strong_rand_bytes(10)
-    |> Base.encode16(case: :mixed)
+    |> Base.encode16(case: :lower)
   end
 
   defp maybe_set_job_name(%Job{job_name: nil} = job) do
