@@ -26,6 +26,13 @@ defmodule ElixirLatex.Attachment do
     end
   end
 
+  @spec is_valid_data_url(data_url :: term) :: boolean
+  def is_valid_data_url(data_url) when is_binary(data_url) do
+    parse_data_url(data_url) != :error
+  end
+
+  def is_valid_data_url(_), do: false
+
   @spec parse_data_url(data_url :: binary) :: {:ok, binary, binary} | :error
   def parse_data_url(data_url) when is_binary(data_url) do
     case Regex.scan(@pattern, data_url) do
