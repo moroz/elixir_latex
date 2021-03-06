@@ -4,10 +4,11 @@ defmodule ElixirLatex.MixProject do
   def project do
     [
       app: :elixir_latex,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package()
     ]
   end
 
@@ -15,6 +16,17 @@ defmodule ElixirLatex.MixProject do
   def application do
     [
       extra_applications: [:logger]
+    ]
+  end
+
+  defp package do
+    [
+      licenses: ["BSD-3"],
+      description:
+        "Renders LaTeX source files using the Phoenix templating engine, handles attachments, compiles everything as PDF using (Xe)LaTeX.",
+      links: %{
+        "Github" => "https://github.com/moroz/elixir_latex"
+      }
     ]
   end
 
