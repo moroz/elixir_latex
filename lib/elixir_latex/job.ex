@@ -8,7 +8,7 @@ defmodule ElixirLatex.Job do
   end
 
   @type assigns :: %{optional(atom) => any}
-  @type attachments :: %{optional(atom) => iodata}
+  @type attachments :: %{optional(atom | binary) => iodata}
   @type layout :: {atom, binary | atom} | false
   @type view :: atom | false
   @type renderer :: binary | :xelatex | :latex | :pdflatex
@@ -40,13 +40,13 @@ defmodule ElixirLatex.Job do
     %{job | assigns: Map.put(assigns, key, value)}
   end
 
-  @spec put_attachment(t, atom, iodata) :: t
+  @spec put_attachment(t, atom | binary, iodata) :: t
   def put_attachment(%Job{attachments: attachments} = job, key, value)
       when is_atom(key) do
     %{job | attachments: Map.put(attachments, key, value)}
   end
 
-  @spec put_data_url_attachment(t, atom, binary) :: t | :error
+  @spec put_data_url_attachment(t, atom | binary, binary) :: t | :error
   def put_data_url_attachment(%Job{attachments: attachments} = job, key, data_url) do
     with %Attachment{} = attachment <- Attachment.from_data_url(data_url) do
       %{job | attachments: Map.put(attachments, key, attachment)}

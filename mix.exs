@@ -34,7 +34,10 @@ defmodule ElixirLatex.MixProject do
   defp deps do
     [
       {:mime, "~> 1.5"},
-      {:phoenix, ">= 1.3.0"}
+      {:phoenix, ">= 1.3.0"},
+
+      # Hex
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 end
