@@ -1,7 +1,7 @@
 defmodule ElixirLatex.LatexHelpers do
   @special_char_regex ~r/([\\\^\%~\#\$%&_\{\}])/
 
-  @spec escape_latex(string :: binary) :: binary
+  @spec escape_latex(string :: binary | nil) :: binary
   @doc """
   Replaces all characters that have a special meaning in latex sources
   with their corresponding escape sequences.
@@ -9,6 +9,8 @@ defmodule ElixirLatex.LatexHelpers do
   def escape_latex(string) when is_binary(string) do
     Regex.replace(@special_char_regex, string, &replace_special_char/1)
   end
+
+  def escape_latex(nil), do: ""
 
   @replacement_map %{
     "#" => "\\#",
