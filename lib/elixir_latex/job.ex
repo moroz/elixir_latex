@@ -77,12 +77,15 @@ defmodule ElixirLatex.Job do
   def render(job, template, assigns \\ [])
 
   def render(%Job{} = job, template, assigns) when is_binary(template) do
-    job = maybe_set_job_name(job) |> assign_attachments()
-    assigns = merge_assigns(job.assigns, assigns)
-    source = render_with_layout(job, template, assigns)
-
+    source = render_to_iodata(job, template, assigns)
     job = put_body(job, source)
     ElixirLatex.Renderer.render_to_pdf(job)
+  end
+
+  def render_to_iodata(%Job{} = job, template, assigns) when is_binary(template) do
+    job = maybe_set_job_name(job) |> assign_attachments()
+    assigns = merge_assigns(job.assigns, assigns)
+    render_with_layout(job, template, assigns)
   end
 
   defp merge_assigns(original, overrides) do
